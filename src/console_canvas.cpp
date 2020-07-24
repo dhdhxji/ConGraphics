@@ -109,12 +109,19 @@ void Canvas::draw_line(const glm::vec3& a, const glm::vec3& b, char pix)
     }
 }
 
-void Canvas::draw_triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)
+void Canvas::draw_triangle(const glm::vec3& a, 
+                           const glm::vec3& b, 
+                           const glm::vec3& c, 
+                           frag_func_t f)
 {
     ;
 }
 
-void Canvas::draw_square(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, const glm::vec3& d)
+void Canvas::draw_square(const glm::vec3& a, 
+                         const glm::vec3& b, 
+                         const glm::vec3& c, 
+                         const glm::vec3& d, 
+                         frag_func_t f)
 {
     ;
 }

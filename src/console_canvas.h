@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <string>
 
+typedef char (*frag_func_t)(const glm::vec3& position);
+
 class Canvas
 {
 public:
@@ -17,8 +19,16 @@ public:
     
     void draw_line(const glm::vec3& a, const glm::vec3& b, char pix);
 
-    void draw_triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c);
-    void draw_square(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, const glm::vec3& d);
+    void draw_triangle(const glm::vec3& a, 
+                       const glm::vec3& b, 
+                       const glm::vec3& c,
+                       frag_func_t f);
+
+    void draw_square(const glm::vec3& a, 
+                     const glm::vec3& b, 
+                     const glm::vec3& c, 
+                     const glm::vec3& d,
+                     frag_func_t f);
 
     void clear_screen();
     void render();
