@@ -40,8 +40,8 @@ glm::vec3 Canvas::viewport_extend(const glm::vec3& vec)
     viewport_pos += 1.f;
     viewport_pos /= 2;
 
-    viewport_pos.x = round(viewport_pos.x * _width);
-    viewport_pos.y = round(viewport_pos.y * _height);
+    viewport_pos.x = round(viewport_pos.x * (_width-1));
+    viewport_pos.y = round(viewport_pos.y * (_height-1));
     viewport_pos.z = round(viewport_pos.z * 255);
 
     return viewport_pos;
