@@ -125,7 +125,35 @@ void Canvas::draw_triangle(const glm::vec3& a,
                            const glm::vec3& c, 
                            frag_func_t f)
 {
-    ;
+    const glm::vec3 ab_vec = b-a;
+    const glm::vec3 ac_vec = c-a;
+
+    glm::vec3 view_ab_vec = viewport_extend(ab_vec);
+    glm::vec3 view_ac_vec = viewport_extend(ac_vec);
+    view_ab_vec.z = 0;
+    view_ac_vec.z = 0;
+
+    const uint16_t ab_point_cnt = std::max(view_ab_vec.x, view_ab_vec.y);
+    const uint16_t ac_point_max_cnt = std::max(view_ac_vec.x, view_ac_vec.y);
+
+    const float ab_step = 1.f/ab_point_cnt;
+    const float ac_step = 1.f/ac_point_max_cnt;
+
+    for(int ab = 0; ab < ab_point_cnt; ++ab)
+    {
+        uint16_t ac_point_cnt = ac_point_max_cnt * (ab_point_cnt - ab) / ab_point_cnt;
+        for(int ac = 0; ac < ac_point_cnt; ++ac)
+        {
+            const float ab_coef = ab_step * ab;
+            const float ac_coef = ac_step * ac;
+            
+            const glm::vec3 ab_pos = ab_vec * ab_coef;
+            const glm::vec3 ac_pos = ac_vec * ac_coef;
+
+            const glm::vec3 result_vec = (ab_pos + ac_pos) + a;
+            draw_point(result_vec, f(result_vec));
+        }
+    }
 }
 
 void Canvas::draw_square(const glm::vec3& a, 
