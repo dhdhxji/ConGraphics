@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <cstring>
+#include "glm/geometric.hpp"
 
 
 Canvas::Canvas()
@@ -33,6 +34,17 @@ void Canvas::free_screen()
     delete[] _z_buffer;
 }
 
+void Canvas::viewport_extend(const glm::vec3& vec, uint16_t& x, uint16_t& y, uint16_t& z)
+{
+    glm::vec3 viewport_pos = vec;
+    viewport_pos += 1.f;
+    viewport_pos /= 2;
+
+    x = round(viewport_pos.x * _width);
+    y = round(viewport_pos.y * _height);
+    z = round(viewport_pos.z * 255);
+}
+
 void Canvas::update_viewport()
 {
     if(_screen_buffer != nullptr)
@@ -57,13 +69,8 @@ void Canvas::update_viewport()
 void Canvas::draw_point(const glm::vec3& pos, char pix)
 {
     //pos is normalized device coordinates, -1.f...1.f
-    glm::vec3 viewport_pos = pos;
-    viewport_pos += 1.f;
-    viewport_pos /= 2;
-
-    const uint16_t x = round(viewport_pos.x * _width);
-    const uint16_t y = round(viewport_pos.y * +_height);
-    const uint8_t z = round(viewport_pos.z * 255);
+    uint16_t x, y, z;
+    viewport_extend(pos, x, y, z);
 
     if(x < 0 || x >= _width ||
        y < 0 || y >= _height||
@@ -84,7 +91,22 @@ void Canvas::draw_point(const glm::vec3& pos, char pix)
 
 void Canvas::draw_line(const glm::vec3& a, const glm::vec3& b, char pix)
 {
-    ;
+    const glm::vec3 line_vec = b-a;
+ 
+    uint16_t view_x, view_y, view_z;
+    viewport_extend(line_vec, view_x, view_y, view_z);
+
+    const uint16_t points_count = round(glm::length(glm::vec3(view_x,
+                                                              view_y,
+                                                              0.f)));
+
+    const float step = 1.f/points_count;
+    for(int i = 0; i < points_count; ++i)
+    {
+        const float line_pos = step * i;
+
+        draw_point(line_vec * line_pos + a, pix);
+    }
 }
 
 void Canvas::draw_triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)
