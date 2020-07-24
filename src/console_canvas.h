@@ -35,6 +35,7 @@ public:
 
 protected:
     void free_screen();
+    glm::vec3 viewport_extend(const glm::vec3& vec);
     void viewport_extend(const glm::vec3& vec, uint16_t& x, uint16_t& y, uint16_t& z);
 
 protected: 

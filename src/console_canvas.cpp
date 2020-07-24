@@ -34,15 +34,26 @@ void Canvas::free_screen()
     delete[] _z_buffer;
 }
 
-void Canvas::viewport_extend(const glm::vec3& vec, uint16_t& x, uint16_t& y, uint16_t& z)
+glm::vec3 Canvas::viewport_extend(const glm::vec3& vec)
 {
     glm::vec3 viewport_pos = vec;
     viewport_pos += 1.f;
     viewport_pos /= 2;
 
-    x = round(viewport_pos.x * _width);
-    y = round(viewport_pos.y * _height);
-    z = round(viewport_pos.z * 255);
+    viewport_pos.x = round(viewport_pos.x * _width);
+    viewport_pos.y = round(viewport_pos.y * _height);
+    viewport_pos.z = round(viewport_pos.z * 255);
+
+    return viewport_pos;
+}
+
+void Canvas::viewport_extend(const glm::vec3& vec, uint16_t& x, uint16_t& y, uint16_t& z)
+{
+    glm::vec3 dest = viewport_extend(vec);
+
+    x = dest.x;
+    y = dest.y;
+    z = dest.z;
 }
 
 void Canvas::update_viewport()
