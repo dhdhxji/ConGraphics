@@ -90,7 +90,7 @@ void Canvas::draw_point(const glm::vec3& pos, char pix)
         return;
     }
 
-    if(z <= _z_buffer[y][x])
+    if(z < _z_buffer[y][x])
     {
         return;
     }
