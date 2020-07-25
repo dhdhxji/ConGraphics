@@ -4,11 +4,28 @@
 #include <cmath>
 #include <iostream>
 #include <cstring>
-#include "glm/geometric.hpp"
 #include <sstream>
 #include <string>
 #include <iomanip>
 
+#include "glm/geometric.hpp"
+#include "glm/vec2.hpp"
+
+//math stuff
+static glm::vec3 barometric(const glm::vec2& a,
+                            const glm::vec2& b,
+                            const glm::vec2& c,
+                            const glm::vec2& p)
+{
+    const glm::vec3 v_x(b.x - a.x, c.x - a.x, a.x - p.x);
+    const glm::vec3 v_y(b.y - a.y, c.y - a.y, a.y - p.y);
+     
+    const glm::vec3 u = glm::cross(v_x, v_y);
+    
+    return glm::vec3(1.f - (u.x + u.y)/u.z,
+                     u.x/u.z,
+                     u.y/u.z);
+}
 
 Canvas::Canvas()
 {
@@ -176,36 +193,43 @@ void Canvas::draw_triangle(const glm::vec3& a,
                            const glm::vec3& c, 
                            frag_func_t f)
 {
-    const glm::vec3 ab_vec = b-a;
-    const glm::vec3 ac_vec = c-a;
+    const glm::vec3 vp_a = viewport_extend(a);
+    const glm::vec3 vp_b = viewport_extend(b);
+    const glm::vec3 vp_c = viewport_extend(c);
 
-    glm::vec3 view_ab_vec = viewport_extend(ab_vec);
-    glm::vec3 view_ac_vec = viewport_extend(ac_vec);
-    view_ab_vec.z = 0;
-    view_ac_vec.z = 0;
+    glm::vec2 box_min(vp_a.x, vp_a.y);
+    glm::vec2 box_max(vp_a.x, vp_a.y);
 
-    const uint16_t ab_point_cnt = std::max(view_ab_vec.x, view_ab_vec.y);
-    const uint16_t ac_point_max_cnt = std::max(view_ac_vec.x, view_ac_vec.y);
+    box_min.x = std::min(box_min.x, vp_b.x);
+    box_min.x = std::min(box_min.x, vp_c.x);
+    box_min.y = std::min(box_min.y, vp_b.y);
+    box_min.y = std::min(box_min.y, vp_c.y);
 
-    const float ab_step = 1.f/ab_point_cnt;
-    const float ac_step = 1.f/ac_point_max_cnt;
+    box_max.x = std::max(box_max.x, vp_b.x);
+    box_max.x = std::max(box_max.x, vp_c.x);
+    box_max.y = std::max(box_max.y, vp_b.y);
+    box_max.y = std::max(box_max.y, vp_c.y);
 
-    for(int ab = 0; ab < ab_point_cnt; ++ab)
+    for(int y = box_min.y; y < box_max.y; ++y)
     {
-        uint16_t ac_point_cnt = ac_point_max_cnt * (ab_point_cnt - ab) / ab_point_cnt;
-        for(int ac = 0; ac < ac_point_cnt; ++ac)
+        for(int x = box_min.x; x < box_max.x; ++x)
         {
-            const float ab_coef = ab_step * ab;
-            const float ac_coef = ac_step * ac;
+            glm::vec3 baro = barometric(vp_a, vp_b, vp_c, glm::vec2(x, y));
             
-            const glm::vec3 ab_pos = ab_vec * ab_coef;
-            const glm::vec3 ac_pos = ac_vec * ac_coef;
+            if(baro.x < 0.f || baro.y < 0.f || baro.z < 0.f)
+            {
+                continue;
+            }
+            else
+            {
+                const glm::vec3 res = a*baro.x + b*baro.y + c*baro.z;
 
-            const glm::vec3 result_vec = (ab_pos + ac_pos) + a;
-            draw_point(result_vec, f(result_vec));
-        }
+                draw_point(res, f);
+            }
+        }    
     }
-}
+
+}   
 
 void Canvas::draw_rectangle(const glm::vec3& a, 
                          const glm::vec3& b, 
