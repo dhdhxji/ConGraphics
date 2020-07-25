@@ -156,13 +156,14 @@ void Canvas::draw_triangle(const glm::vec3& a,
     }
 }
 
-void Canvas::draw_square(const glm::vec3& a, 
+void Canvas::draw_rectangle(const glm::vec3& a, 
                          const glm::vec3& b, 
                          const glm::vec3& c, 
                          const glm::vec3& d, 
                          frag_func_t f)
 {
-    ;
+    draw_triangle(a, b, c, f);
+    draw_triangle(a, c, d, f);
 }
 
 void Canvas::clear_screen()

@@ -24,7 +24,7 @@ public:
                        const glm::vec3& c,
                        frag_func_t f);
 
-    void draw_square(const glm::vec3& a, 
+    void draw_rectangle(const glm::vec3& a, 
                      const glm::vec3& b, 
                      const glm::vec3& c, 
                      const glm::vec3& d,
