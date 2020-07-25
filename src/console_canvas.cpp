@@ -168,6 +168,8 @@ void Canvas::draw_rectangle(const glm::vec3& a,
 
 void Canvas::clear_screen()
 {
+    std::cout << "\e[0;0H";
+
     for(int i = 0 ; i < _height; ++i)
     {
         memset(_screen_buffer[i], ' ', _width);
