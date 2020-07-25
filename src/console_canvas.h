@@ -35,6 +35,8 @@ public:
 
     void highlight_point(const glm::vec3& p);
 
+    void draw_string(const glm::vec3& pos, const std::string& str);
+
     void clear_screen();
     void render();
 

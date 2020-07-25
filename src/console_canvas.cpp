@@ -275,6 +275,16 @@ void Canvas::highlight_point(const glm::vec3& p)
     }            
 }
 
+void Canvas::draw_string(const glm::vec3& pos, const std::string& str)
+{
+    const glm::vec3 vp_pos = viewport_extend(pos);
+
+    for(int i = 0; i < (int)str.length(); ++i)
+    {
+        draw_viewport_point(vp_pos + glm::vec3(vp_pos.x + i, 0.f, 0.f), str[i]);
+    }
+}
+
 void Canvas::clear_screen()
 {
     std::cout << "\e[0;0H";
