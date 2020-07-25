@@ -80,6 +80,8 @@ void Canvas::update_viewport()
     }
 }
 
+
+
 void Canvas::draw_point(const glm::vec3& pos, char pix)
 {
     //pos is normalized device coordinates, -1.f...1.f
@@ -101,6 +103,29 @@ void Canvas::draw_point(const glm::vec3& pos, char pix)
     _z_buffer[y][x] = z;
 
     _screen_buffer[y][x] = pix;    
+}
+
+void Canvas::draw_point(const glm::vec3& pos, frag_func_t f)
+{
+    //pos is normalized device coordinates, -1.f...1.f
+    uint16_t x, y, z;
+    viewport_extend(pos, x, y, z);
+
+    if(x < 0 || x >= _width ||
+       y < 0 || y >= _height||
+       z < 0 || z >= 256)
+    {
+        return;
+    }
+
+    if(z < _z_buffer[y][x])
+    {
+        return;
+    }
+
+    _z_buffer[y][x] = z;
+
+    _screen_buffer[y][x] = f(pos);
 }
 
 void Canvas::draw_viewport_point(const glm::vec3& pos, char pix)

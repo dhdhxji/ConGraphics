@@ -16,6 +16,7 @@ public:
     void update_viewport();
 
     void draw_point(const glm::vec3& pos, char pix);
+    void draw_point(const glm::vec3& pos, frag_func_t f);
     
     void draw_viewport_point(const glm::vec3& pos, char pix);
     
