@@ -5,6 +5,9 @@
 #include <iostream>
 #include <cstring>
 #include "glm/geometric.hpp"
+#include <sstream>
+#include <string>
+#include <iomanip>
 
 
 Canvas::Canvas()
@@ -100,6 +103,29 @@ void Canvas::draw_point(const glm::vec3& pos, char pix)
     _screen_buffer[y][x] = pix;    
 }
 
+void Canvas::draw_viewport_point(const glm::vec3& pos, char pix)
+{
+    const int x = pos.x;
+    const int y = pos.y;
+    const int z = pos.z;
+
+    if(x < 0 || x >= _width ||
+       y < 0 || y >= _height||
+       z < 0 || z >= 256)
+    {
+        return;
+    }
+
+    if(z <= _z_buffer[y][x])
+    {
+        return;
+    }
+
+    _z_buffer[y][x] = z;
+
+    _screen_buffer[y][x] = pix;
+}
+
 void Canvas::draw_line(const glm::vec3& a, const glm::vec3& b, char pix)
 {
     const glm::vec3 line_vec = b-a;
@@ -164,6 +190,40 @@ void Canvas::draw_rectangle(const glm::vec3& a,
 {
     draw_triangle(a, b, c, f);
     draw_triangle(a, c, d, f);
+}
+
+void Canvas::highlight_point(const glm::vec3& p)
+{
+    const glm::vec3 p_front(p.x, p.y, 1.f);
+    const glm::vec3 vp_coords = viewport_extend(p_front);
+    
+
+    std::stringstream ss;
+    ss << std::setprecision(3) << std::fixed << "(" << p.x << ";" << p.y << ";" << p.z << ")";
+
+    std::string point_info = ss.str();
+    
+    const glm::vec3 l_vec(point_info.length() + 2, 0.f, 0.f);
+
+    const glm::vec3 l1_start((float)vp_coords.x+1, vp_coords.y-1, vp_coords.z);
+    const glm::vec3 l2_start((float)vp_coords.x+1, vp_coords.y+1, vp_coords.z);
+
+    for(int i = 0; i < (int)point_info.length() + 2; ++i)
+    {
+        draw_viewport_point(l1_start + glm::vec3(i, 0.f, 0.f), ' ');
+        draw_viewport_point(l2_start + glm::vec3(i, 0.f, 0.f), ' ');
+    }
+
+    draw_viewport_point(glm::vec3(vp_coords.x + 1, vp_coords.y, 255), ' ');
+    draw_viewport_point(glm::vec3(vp_coords.x + 2 + point_info.length(), vp_coords.y, 255), ' ');
+
+    glm::vec3 text_base_pos(vp_coords.x + 2, vp_coords.y, 255);
+    for(int i = 0; i < (int)(point_info.length()); ++i)
+    {
+        glm::vec3 text_offset(i, 0.f, 0.f);
+
+        draw_viewport_point(text_base_pos + text_offset, point_info[i]);
+    }            
 }
 
 void Canvas::clear_screen()

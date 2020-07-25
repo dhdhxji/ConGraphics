@@ -17,6 +17,8 @@ public:
 
     void draw_point(const glm::vec3& pos, char pix);
     
+    void draw_viewport_point(const glm::vec3& pos, char pix);
+    
     void draw_line(const glm::vec3& a, const glm::vec3& b, char pix);
 
     void draw_triangle(const glm::vec3& a, 
@@ -29,6 +31,8 @@ public:
                      const glm::vec3& c, 
                      const glm::vec3& d,
                      frag_func_t f);
+
+    void highlight_point(const glm::vec3& p);
 
     void clear_screen();
     void render();
