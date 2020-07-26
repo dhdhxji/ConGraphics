@@ -31,6 +31,9 @@ Canvas::Canvas()
 {
     update_viewport();
     clear_screen();
+
+    //hide the cursor
+    std::cout << "\e[?25l";
 }
 
 Canvas::~Canvas()
