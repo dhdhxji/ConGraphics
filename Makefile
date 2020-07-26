@@ -2,7 +2,7 @@ CC=g++
 CFLAGS=-c -Wall
 LDFLAGS=
 INCLUDE=-Iinclude -Isrc
-SOURCES=main.cpp src/console_canvas.cpp
+SOURCES=main.cpp src/console_canvas.cpp src/cube.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=cube
 
